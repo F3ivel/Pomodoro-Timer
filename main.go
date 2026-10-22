@@ -1,7 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
+	"strings"
 	"time"
 )
 
@@ -34,17 +37,47 @@ func countdown(duration time.Duration, phase string) {
 	}
 }
 
+func switchPhase(phase *string) {
+
+	reader := bufio.NewReader(os.Stdin)
+
+	if *phase == "Work phase" {
+		*phase = "Break phase"
+	} else {
+		*phase = "Work phase"
+	}
+
+	for {
+		fmt.Printf("Please confirm with \"yes\" to start the %s: ", *phase)
+
+		input, err := reader.ReadString('\n')
+		if err != nil && len(input) == 0 {
+			fmt.Println("Invalid input!")
+			continue
+		}
+
+		input = strings.TrimSpace(input)
+
+		if input == "yes" {
+			fmt.Println()
+			break
+		}
+	}
+}
+
 func main() {
 	fmt.Println("\tHello from 🍅-Timer\n")
 
 	workDuration := 25 * time.Minute
 	breakDuration := 5 * time.Minute
+	currentPhase := "Work phase"
 
 	fmt.Println("🍅-Timer started\n")
 
-	countdown(workDuration, "Work phase")
-	fmt.Println("\n✅ Work phase finished!\n")
+	countdown(workDuration, currentPhase)
+	fmt.Printf("\n✅ %s finished!\n", currentPhase)
+	switchPhase(&currentPhase)
 
-	countdown(breakDuration, "Break phase")
-	fmt.Println("\n✅ Break phase finished!")
+	countdown(breakDuration, currentPhase)
+	fmt.Printf("\n✅ %s finished!", currentPhase)
 }
