@@ -1,0 +1,6 @@
+
+# This file can be used to change the behavior of the Pomodoro timer
+
+# Here you can set the work and break duration
+workDuration=""
+breakDuration=""

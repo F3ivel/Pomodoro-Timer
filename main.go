@@ -65,12 +65,79 @@ func switchPhase(phase *string) {
 	}
 }
 
-func main() {
-	fmt.Println("\tHello from 🍅-Timer\n")
+func readSettings(workDuration, breakDuration *time.Duration) {
+	file, err := os.Open("settings.txt")
 
-	workDuration := 25 * time.Minute
-	breakDuration := 5 * time.Minute
+	if err != nil {
+		fmt.Println("Error: File could not be opened!", err)
+		return
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+
+	for {
+		if scanner.Scan() {
+			line := scanner.Text()
+
+			// Filters empty lines, lines with no assignement and comments out
+			if line == "" || !strings.Contains(line, "=") || strings.HasPrefix(line, "#") {
+				continue
+			} else {
+				// Reads the "workDuration" setting
+				if strings.HasPrefix(line, "workDuration=") {
+					_, value, _ := strings.Cut(line, "=")
+					value = strings.ReplaceAll(value, "\"", "")
+					tmp, err := time.ParseDuration(value)
+
+					if err != nil {
+						fmt.Println("Invalid value for the setting \"workDuration\" detected.", err)
+						continue
+					} else {
+						*workDuration = tmp
+					}
+				}
+				// Reads the "breakDuration" setting
+				if strings.HasPrefix(line, "breakDuration=") {
+					_, value, _ := strings.Cut(line, "=")
+					value = strings.ReplaceAll(value, "\"", "")
+					tmp, err := time.ParseDuration(value)
+
+					if err != nil {
+						fmt.Println("Invalid value for the setting \"breakDuration\" detected.", err)
+						continue
+					} else {
+						*breakDuration = tmp
+					}
+				}
+			}
+		} else {
+			break
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		panic(err)
+	}
+
+	if *workDuration <= 0 {
+		fmt.Println("Invalid value or no value was set for the setting \"workDuration\". Default value \"25m\" will be used.")
+		*workDuration = 25 * time.Minute
+	}
+
+	if *breakDuration <= 0 {
+		fmt.Println("Invalid value or no value was set for the setting \"breakDuration\". Default value \"5m\" will be used.")
+		*breakDuration = 5 * time.Minute
+	}
+}
+
+func main() {
+	var workDuration time.Duration = -1 * time.Minute
+	var breakDuration time.Duration = -1 * time.Minute
 	currentPhase := "Work phase"
+
+	fmt.Println("\tHello from 🍅-Timer\n")
+	readSettings(&workDuration, &breakDuration)
 
 	fmt.Println("🍅-Timer started\n")
 
