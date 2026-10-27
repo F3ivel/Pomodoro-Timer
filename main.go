@@ -90,8 +90,9 @@ func readSettings(workDuration, breakDuration *time.Duration, autoStartTimer *bo
 					value = strings.ReplaceAll(value, "\"", "")
 					tmp, err := time.ParseDuration(value)
 
-					if err != nil {
-						fmt.Println("Invalid value for the setting \"workDuration\" detected.", err)
+					if (err != nil) || (tmp <= 0) {
+						fmt.Println("[INFO]: Invalid value or no value was set for the setting \"workDuration\" -> Default value \"25m\" will be used.")
+						*workDuration = 25 * time.Minute
 						continue
 					} else {
 						*workDuration = tmp
@@ -103,8 +104,9 @@ func readSettings(workDuration, breakDuration *time.Duration, autoStartTimer *bo
 					value = strings.ReplaceAll(value, "\"", "")
 					tmp, err := time.ParseDuration(value)
 
-					if err != nil {
-						fmt.Println("Invalid value for the setting \"breakDuration\" detected.", err)
+					if (err != nil) || (tmp <= 0) {
+						fmt.Println("[INFO]: Invalid value or no value was set for the setting \"breakDuration\" -> Default value \"5m\" will be used.")
+						*breakDuration = 5 * time.Minute
 						continue
 					} else {
 						*breakDuration = tmp
@@ -116,11 +118,13 @@ func readSettings(workDuration, breakDuration *time.Duration, autoStartTimer *bo
 					value = strings.ReplaceAll(value, "\"", "")
 
 					if (value != "true") && (value != "false") {
-						fmt.Println("[INFO]: Invalid value or no value was set for the setting \"autoStartTimer\". Default value \"false\" will be used.\n")
+						fmt.Println("[INFO]: Invalid value or no value was set for the setting \"autoStartTimer\" -> Default value \"false\" will be used.")
+						*autoStartTimer = false
 					} else {
-						// Set autoStartTimer to true, otherwise default value false will be used
 						if value == "true" {
 							*autoStartTimer = true
+						} else {
+							*autoStartTimer = false
 						}
 					}
 				}
@@ -130,18 +134,10 @@ func readSettings(workDuration, breakDuration *time.Duration, autoStartTimer *bo
 		}
 	}
 
+	fmt.Println()
+
 	if err := scanner.Err(); err != nil {
 		panic(err)
-	}
-
-	if *workDuration <= 0 {
-		fmt.Println("Invalid value or no value was set for the setting \"workDuration\". Default value \"25m\" will be used.")
-		*workDuration = 25 * time.Minute
-	}
-
-	if *breakDuration <= 0 {
-		fmt.Println("Invalid value or no value was set for the setting \"breakDuration\". Default value \"5m\" will be used.")
-		*breakDuration = 5 * time.Minute
 	}
 }
 
