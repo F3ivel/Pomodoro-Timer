@@ -65,7 +65,7 @@ func switchPhase(phase *string) {
 	}
 }
 
-func readSettings(workDuration, breakDuration *time.Duration) {
+func readSettings(workDuration, breakDuration *time.Duration, autoStartTimer *bool) {
 	file, err := os.Open("settings.txt")
 
 	if err != nil {
@@ -110,6 +110,20 @@ func readSettings(workDuration, breakDuration *time.Duration) {
 						*breakDuration = tmp
 					}
 				}
+				// Reads the "autoStartTimer" setting
+				if strings.HasPrefix(line, "autoStartTimer=") {
+					_, value, _ := strings.Cut(line, "=")
+					value = strings.ReplaceAll(value, "\"", "")
+
+					if (value != "true") && (value != "false") {
+						fmt.Println("[INFO]: Invalid value or no value was set for the setting \"autoStartTimer\". Default value \"false\" will be used.\n")
+					} else {
+						// Set autoStartTimer to true, otherwise default value false will be used
+						if value == "true" {
+							*autoStartTimer = true
+						}
+					}
+				}
 			}
 		} else {
 			break
@@ -131,15 +145,42 @@ func readSettings(workDuration, breakDuration *time.Duration) {
 	}
 }
 
+func startTimer(autoStartTimer *bool) {
+	if *autoStartTimer {
+		fmt.Println("🍅-Timer started\n")
+	} else {
+		reader := bufio.NewReader(os.Stdin)
+
+		for {
+			fmt.Printf("Would you like to start the Pomodoro timer? (yes or no): ")
+
+			input, err := reader.ReadString('\n')
+			if err != nil && len(input) == 0 {
+				fmt.Println("Invalid input!")
+				continue
+			}
+
+			input = strings.TrimSpace(input)
+
+			if input == "yes" {
+				fmt.Println()
+				break
+			}
+		}
+		fmt.Println("🍅-Timer started\n")
+	}
+}
+
 func main() {
 	var workDuration time.Duration = -1 * time.Minute
 	var breakDuration time.Duration = -1 * time.Minute
+	var autoStartTimer bool = false
 	currentPhase := "Work phase"
 
 	fmt.Println("\tHello from 🍅-Timer\n")
-	readSettings(&workDuration, &breakDuration)
+	readSettings(&workDuration, &breakDuration, &autoStartTimer)
 
-	fmt.Println("🍅-Timer started\n")
+	startTimer(&autoStartTimer)
 
 	countdown(workDuration, currentPhase)
 	fmt.Printf("\n✅ %s finished!\n", currentPhase)

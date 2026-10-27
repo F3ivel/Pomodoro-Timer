@@ -1,6 +1,9 @@
 
 # This file can be used to change the behavior of the Pomodoro timer
 
-# Here you can set the work and break duration
+# Set the work and break duration - e.g. 20m (20 minutes), 2h (2 hours), 180s (180 seconds)
 workDuration=""
 breakDuration=""
+
+# Select if the Pomodoro timer should start immediatly after application start - e.g. true or false
+autoStartTimer=""
