@@ -69,7 +69,10 @@ func readSettings(workDuration, breakDuration *time.Duration, autoStartTimer *bo
 	file, err := os.Open("settings.txt")
 
 	if err != nil {
-		fmt.Println("Error: File could not be opened!", err)
+		fmt.Println("[Error]: Application settings could not be read -> Default values for the settings will be used.\n")
+		*workDuration = 25 * time.Minute
+		*breakDuration = 5 * time.Minute
+		*autoStartTimer = false
 		return
 	}
 	defer file.Close()
@@ -148,7 +151,7 @@ func startTimer(autoStartTimer *bool) {
 		reader := bufio.NewReader(os.Stdin)
 
 		for {
-			fmt.Printf("Would you like to start the Pomodoro timer? (yes or no): ")
+			fmt.Printf("Would you like to start the Pomodoro timer? (Type \"yes\" to continue): ")
 
 			input, err := reader.ReadString('\n')
 			if err != nil && len(input) == 0 {
