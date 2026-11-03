@@ -9,20 +9,22 @@ import (
 )
 
 func main() {
-	var workDuration time.Duration = -1 * time.Minute
-	var breakDuration time.Duration = -1 * time.Minute
-	var autoStartTimer bool = false
+	settings := config.Settings{
+		WorkDuration:   -1 * time.Minute,
+		BreakDuration:  -1 * time.Minute,
+		AutoStartTimer: false,
+	}
 	currentPhase := "Work phase"
 
 	fmt.Println("\tHello from 🍅-Timer\n")
-	config.ReadSettings(&workDuration, &breakDuration, &autoStartTimer)
+	config.ReadSettings(&settings)
 
-	terminal.StartTimer(&autoStartTimer)
+	terminal.AutoStartTimer(&settings)
 
-	timer.Countdown(workDuration, currentPhase)
+	timer.Countdown(&settings, currentPhase)
 	fmt.Printf("\n✅ %s finished!\n", currentPhase)
 	terminal.SwitchPhase(&currentPhase)
 
-	timer.Countdown(breakDuration, currentPhase)
+	timer.Countdown(&settings, currentPhase)
 	fmt.Printf("\n✅ %s finished!", currentPhase)
 }

@@ -2,13 +2,20 @@ package timer
 
 import (
 	"fmt"
+	"pomodoro-timer/config"
 	"time"
 )
 
-func Countdown(duration time.Duration, phase string) {
+func Countdown(settings *config.Settings, phase string) {
+	var end time.Time
+
 	fmt.Println("🍅-Phase:", phase)
 
-	end := time.Now().Add(duration)
+	if phase == "Work phase" {
+		end = time.Now().Add(settings.WorkDuration)
+	} else {
+		end = time.Now().Add(settings.BreakDuration)
+	}
 
 	for {
 		remaining := time.Until(end)

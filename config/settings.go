@@ -8,14 +8,20 @@ import (
 	"time"
 )
 
-func ReadSettings(workDuration, breakDuration *time.Duration, autoStartTimer *bool) {
+type Settings struct {
+	WorkDuration   time.Duration
+	BreakDuration  time.Duration
+	AutoStartTimer bool
+}
+
+func ReadSettings(settings *Settings) {
 	file, err := os.Open("config/settings.txt")
 
 	if err != nil {
 		fmt.Println("[Error]: Application settings could not be read -> Default values for the settings will be used.\n")
-		*workDuration = 25 * time.Minute
-		*breakDuration = 5 * time.Minute
-		*autoStartTimer = false
+		settings.WorkDuration = 25 * time.Minute
+		settings.BreakDuration = 5 * time.Minute
+		settings.AutoStartTimer = false
 		return
 	}
 	defer file.Close()
@@ -38,10 +44,10 @@ func ReadSettings(workDuration, breakDuration *time.Duration, autoStartTimer *bo
 
 					if (err != nil) || (tmp <= 0) {
 						fmt.Println("[INFO]: Invalid value or no value was set for the setting \"workDuration\" -> Default value \"25m\" will be used.")
-						*workDuration = 25 * time.Minute
+						settings.WorkDuration = 25 * time.Minute
 						continue
 					} else {
-						*workDuration = tmp
+						settings.WorkDuration = tmp
 					}
 				}
 				// Reads the "breakDuration" setting
@@ -52,10 +58,10 @@ func ReadSettings(workDuration, breakDuration *time.Duration, autoStartTimer *bo
 
 					if (err != nil) || (tmp <= 0) {
 						fmt.Println("[INFO]: Invalid value or no value was set for the setting \"breakDuration\" -> Default value \"5m\" will be used.")
-						*breakDuration = 5 * time.Minute
+						settings.BreakDuration = 5 * time.Minute
 						continue
 					} else {
-						*breakDuration = tmp
+						settings.BreakDuration = tmp
 					}
 				}
 				// Reads the "autoStartTimer" setting
@@ -65,12 +71,12 @@ func ReadSettings(workDuration, breakDuration *time.Duration, autoStartTimer *bo
 
 					if (value != "true") && (value != "false") {
 						fmt.Println("[INFO]: Invalid value or no value was set for the setting \"autoStartTimer\" -> Default value \"false\" will be used.")
-						*autoStartTimer = false
+						settings.AutoStartTimer = false
 					} else {
 						if value == "true" {
-							*autoStartTimer = true
+							settings.AutoStartTimer = true
 						} else {
-							*autoStartTimer = false
+							settings.AutoStartTimer = false
 						}
 					}
 				}

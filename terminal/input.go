@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"pomodoro-timer/config"
 	"strings"
 )
 
@@ -35,8 +36,8 @@ func SwitchPhase(phase *string) {
 	}
 }
 
-func StartTimer(autoStartTimer *bool) {
-	if *autoStartTimer {
+func AutoStartTimer(settings *config.Settings) {
+	if settings.AutoStartTimer {
 		fmt.Println("🍅-Timer started\n")
 	} else {
 		reader := bufio.NewReader(os.Stdin)
